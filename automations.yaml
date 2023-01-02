@@ -1,0 +1,118 @@
+- id: '1670084569735'
+  alias: Controllo Antifurto Allarme
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.arduinoalarmactive
+    from: 'off'
+    to: 'on'
+  condition: []
+  action:
+  - service: notify.pushover
+    data:
+      message: Antifurto in allarme
+      title: Allarme Antifurto
+      data:
+        priority: '2'
+        retry: '120'
+        expire: '480'
+  mode: single
+- id: '1670084702329'
+  alias: Controllo Antifurto attivato
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.arduinoalarmstatus
+    from: 'off'
+    to: 'on'
+  condition: []
+  action:
+  - service: notify.pushover
+    data:
+      message: Antifurto attivato
+      title: Stato Antifurto
+      data:
+        priority: '1'
+  mode: single
+- id: '1670084801740'
+  alias: Controllo Antifurto disattivato
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.arduinoalarmstatus
+    from: 'on'
+    to: 'off'
+  condition: []
+  action:
+  - service: notify.pushover
+    data:
+      message: Stato Antifurto disattivato
+      title: Stato Antifurto
+      data:
+        priority: '0'
+  mode: single
+- id: '1671287579970'
+  alias: Presa Bagno 1P con sovraccarico
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.enel_power
+    above: 3000
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 15
+  condition:
+  - condition: numeric_state
+    entity_id: sensor.presabagno1p_power
+    above: 495.8
+  action:
+  - type: turn_off
+    device_id: c55adb949eaa2b76dbed8b7b2a731e92
+    entity_id: switch.presabagno1p
+    domain: switch
+  mode: single
+- id: '1671288251960'
+  alias: Presa Bagno 1P - Attiva
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.enel_power
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 15
+    below: 2000
+  condition:
+  - condition: device
+    type: is_off
+    device_id: c55adb949eaa2b76dbed8b7b2a731e92
+    entity_id: switch.presabagno1p
+    domain: switch
+  action:
+  - type: turn_on
+    device_id: c55adb949eaa2b76dbed8b7b2a731e92
+    entity_id: switch.presabagno1p
+    domain: switch
+  mode: single
+- id: '1671290604302'
+  alias: ENEL - Consumo eccessivo
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.enel_power
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 10
+    above: 3000
+  condition: []
+  action:
+  - service: notify.mobile_app_iphonesimone
+    data:
+      message: Consumo eccessivo
+      title: Allarme ENEL
+  mode: single

@@ -1,0 +1,138 @@
+# Loads default set of integrations. Do not remove.
+default_config:
+
+homeassistant:
+  packages: !include_dir_named packages
+
+# Load frontend themes from the themes folder
+frontend:
+  themes: !include_dir_merge_named themes
+
+# Text to speech
+tts:
+  - platform: google_translate
+
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 10.0.0.200 # Add the IP address of the proxy server
+    - 172.30.33.0/24 # You may also provide the subnet mask
+
+recorder:
+  purge_keep_days: 30
+  auto_repack: true
+  exclude:
+    domains:
+      - automation
+      - script
+    entities:
+      # Exclude any logging of the chosen light.
+      #- light.my_light
+      # Exclude any logging of this color loop script.
+      - light.luce_isaglo
+      - light.luce_sala
+      - light.luce_vittoria
+    event_types:
+      # Do not record ANY service calls
+      - call_service
+
+# Example filter to include specified domains and exclude specified entities
+logbook:
+  exclude:
+    entities:
+      - sensor.date_time
+      - sensor.time
+      - sensor.internet_time
+      - sensor.date_time_utc
+      - sensor.time_utc
+      - sensor.date_time_iso
+      - sensor.time_date
+
+# OpenWrt
+device_tracker:
+  - platform: luci
+    host: 192.168.42.2
+    username: !secret router_user
+    password: !secret router_pwd
+    new_device_defaults:
+      track_new_devices: true
+
+# MQTT
+mqtt:
+  binary_sensor:
+    - name: ArduinoAlarmStatus
+      state_topic: "arduino01/pin2"
+      payload_on: "0"
+      payload_off: "1"
+    - name: ArduinoAlarmActive
+      state_topic: "arduino01/pin3"
+      payload_on: "0"
+      payload_off: "1"
+  alarm_control_panel:
+    - name: Allarme
+      code: !secret antifurto_code
+      state_topic: stat/Alarm
+      command_topic: cmnd/Alarm
+      payload_arm_home: armed_home
+      payload_arm_away: armed_away
+      payload_disarm: disarmed
+      qos: 2
+
+#sensor:
+#  - platform: template
+#    sensors:
+#      internet_download:
+#        friendly_name: "Banda Internet Download"
+#        value_template: '{{ (states.sensor.openwrt_router_kib_s_received.state|float * 8 / 1024) | round(2) }}'
+#        unit_of_measurement: "Mbit/s"
+#        icon_template: mdi:server-network
+#      internet_upload:
+#        friendly_name: "Banda Internet Upload"
+#        value_template: '{{ (states.sensor.openwrt_router_kib_s_sent.state|float * 8 / 1024) | round (2)}}'
+#        unit_of_measurement: "Mbit/s"
+#        icon_template: mdi:server-network
+
+calendar:
+  - platform: caldav
+    url: https://caldav.icloud.com
+    username: !secret icloud_user
+    password: !secret icloud_pwd
+    calendars:
+      - Family
+# Example configuration.yaml entry
+#monitor_docker:
+#  - name: Docker
+#    url: tcp://127.0.0.1:2375
+#    containers:
+#      - appdaemon
+#      - db-dsmr
+#      - db-hass
+#      - deconz
+#      - dsmr
+#      - hass
+#      - influxdb
+#      - mosquitto
+#      - nodered
+#      - unifi
+#    rename:
+#      appdaemon: AppDaemon
+#      db-dsmr: "Database DSMR-Reader"
+#      db-hass: Database Home Assistant
+#      deconz: DeCONZ
+#      dsmr: "DSMR-Reader"
+#      hass: Home Assistant
+#      influxdb: InfluxDB
+#      mosquitto: Mosquitto
+#      nodered: "Node-RED"
+#      unifi: UniFi
+#    monitored_conditions:
+#      - version
+#      - containers_running
+#      - containers_total
+#      - state
+#      - status
+#      - memory
