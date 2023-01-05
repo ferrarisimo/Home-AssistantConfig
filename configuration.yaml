@@ -104,3 +104,5 @@ calendar:
     password: !secret icloud_pwd
     calendars:
       - Family
+
+availability: true
