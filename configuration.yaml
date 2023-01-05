@@ -55,7 +55,7 @@ logbook:
 # OpenWrt
 device_tracker:
   - platform: luci
-    host: 192.168.42.2
+    host: !secret router_ip
     username: !secret router_user
     password: !secret router_pwd
     new_device_defaults:
@@ -103,36 +103,3 @@ calendar:
     password: !secret icloud_pwd
     calendars:
       - Family
-# Example configuration.yaml entry
-#monitor_docker:
-#  - name: Docker
-#    url: tcp://127.0.0.1:2375
-#    containers:
-#      - appdaemon
-#      - db-dsmr
-#      - db-hass
-#      - deconz
-#      - dsmr
-#      - hass
-#      - influxdb
-#      - mosquitto
-#      - nodered
-#      - unifi
-#    rename:
-#      appdaemon: AppDaemon
-#      db-dsmr: "Database DSMR-Reader"
-#      db-hass: Database Home Assistant
-#      deconz: DeCONZ
-#      dsmr: "DSMR-Reader"
-#      hass: Home Assistant
-#      influxdb: InfluxDB
-#      mosquitto: Mosquitto
-#      nodered: "Node-RED"
-#      unifi: UniFi
-#    monitored_conditions:
-#      - version
-#      - containers_running
-#      - containers_total
-#      - state
-#      - status
-#      - memory
