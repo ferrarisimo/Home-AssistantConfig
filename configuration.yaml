@@ -82,20 +82,20 @@ mqtt:
       payload_disarm: disarmed
       qos: 2
 
-#sensor:
-#  - platform: template
-#    sensors:
-#      internet_download:
-#        friendly_name: "Banda Internet Download"
-#        value_template: '{{ (states.sensor.openwrt_router_kib_s_received.state|float * 8 / 1024) | round(2) }}'
-#        unit_of_measurement: "Mbit/s"
-#        icon_template: mdi:server-network
-#      internet_upload:
-#        friendly_name: "Banda Internet Upload"
-#        value_template: '{{ (states.sensor.openwrt_router_kib_s_sent.state|float * 8 / 1024) | round (2)}}'
-#        unit_of_measurement: "Mbit/s"
-#        icon_template: mdi:server-network
-#
+sensor:
+  - platform: template
+    sensors:
+      internet_download:
+        friendly_name: "Banda Internet Download"
+        value_template: '{{ (states.sensor.openwrt_router_kib_s_received.state|float * 8 / 1024) | round(2) }}'
+        unit_of_measurement: "Mbit/s"
+        icon_template: mdi:server-network
+      internet_upload:
+        friendly_name: "Banda Internet Upload"
+        value_template: '{{ (states.sensor.openwrt_router_kib_s_sent.state|float * 8 / 1024) | round (2)}}'
+        unit_of_measurement: "Mbit/s"
+        icon_template: mdi:server-network
+        
 
 calendar:
   - platform: caldav
