@@ -87,14 +87,47 @@ sensor:
     sensors:
       internet_download:
         friendly_name: "Banda Internet Download"
-        value_template: '{{ (states.sensor.openwrt_router_kib_s_received.state|float * 8 / 1024) | round(2) }}'
+        value_template: "{{ (states.sensor.openwrt_router_kib_s_received.state|float * 8 / 1024) | round(2) }}"
         unit_of_measurement: "Mbit/s"
         icon_template: mdi:server-network
       internet_upload:
         friendly_name: "Banda Internet Upload"
-        value_template: '{{ (states.sensor.openwrt_router_kib_s_sent.state|float * 8 / 1024) | round (2)}}'
+        value_template: "{{ (states.sensor.openwrt_router_kib_s_sent.state|float * 8 / 1024) | round (2)}}"
         unit_of_measurement: "Mbit/s"
         icon_template: mdi:server-network
+      costo_enel_f1:
+        friendly_name: "Costo ENEL Fascia 1"
+        value_template: "{{ ((states('sensor.pun_fascia_f1')|float) + (0.077|float)) | round(2) }}"
+        unit_of_measurement: "€/kWh"
+        device_class: monetary
+        icon_template: mdi:currency-eur
+      costo_enel_f2:
+        friendly_name: "Costo ENEL Fascia 2"
+        value_template: "{{ ((states('sensor.pun_fascia_f2')|float) + (0.077|float)) | round(2) }}"
+        unit_of_measurement: "€/kWh"
+        device_class: monetary
+        icon_template: mdi:currency-eur
+      costo_enel_f3:
+        friendly_name: "Costo ENEL Fascia 3"
+        value_template: "{{ ((states('sensor.pun_fascia_f3')|float) + (0.027|float)) | round(2) }}"
+        unit_of_measurement: "€/kWh"
+        device_class: monetary
+        icon_template: mdi:currency-eur
+      costo_attuale_enel:
+        friendly_name: "Costo attuale ENEL"
+        value_template: >-
+          {% if states('sensor.pun_fascia_corrente') == "F1" %}
+          {{states('sensor.costo_enel_f1')}}
+          {% endif %}
+          {% if states('sensor.pun_fascia_corrente') == "F2" %}
+          {{states('sensor.costo_enel_f2')}}
+          {% endif %}
+          {% if states('sensor.pun_fascia_corrente') == "F3" %}
+          {{states('sensor.costo_enel_f3')}}
+          {% endif %}
+        unit_of_measurement: "€/kWh"
+        device_class: monetary
+        icon_template: mdi:currency-eur
 
 calendar:
   - platform: caldav
@@ -103,4 +136,3 @@ calendar:
     password: !secret icloud_pwd
     calendars:
       - Family
-
