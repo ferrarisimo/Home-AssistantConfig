@@ -132,6 +132,11 @@ sensor:
         value_template: "{{ [(states('sensor.enel_power') | int), 0] | max }}"
         unit_of_measurement: "W"
         device_class: energy
+  - platform: integration
+    source: sensor.enel_power
+    name: consumo_enel_kwh
+    unit_prefix: k
+    round: 2
 
 calendar:
   - platform: caldav
