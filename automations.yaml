@@ -4,7 +4,7 @@
   trigger:
   - platform: state
     entity_id:
-    - binary_sensor.arduinoalarmactive
+    - binary_sensor.allarme_antifurto
     from: 'off'
     to: 'on'
   condition: []
@@ -24,7 +24,7 @@
   trigger:
   - platform: state
     entity_id:
-    - binary_sensor.arduinoalarmstatus
+    - binary_sensor.stato_antifurto
     from: 'off'
     to: 'on'
   condition: []
@@ -42,7 +42,7 @@
   trigger:
   - platform: state
     entity_id:
-    - binary_sensor.arduinoalarmstatus
+    - binary_sensor.stato_antifurto
     from: 'on'
     to: 'off'
   condition: []
