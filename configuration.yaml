@@ -63,15 +63,15 @@ device_tracker:
 
 # MQTT
 mqtt:
-  binary_sensor:
-    - name: ArduinoAlarmStatus
-      state_topic: "arduino01/pin2"
-      payload_on: "0"
-      payload_off: "1"
-    - name: ArduinoAlarmActive
-      state_topic: "arduino01/pin3"
-      payload_on: "0"
-      payload_off: "1"
+  #  binary_sensor:
+  #    - name: ArduinoAlarmStatus
+  #      state_topic: "arduino01/pin2"
+  #      payload_on: "0"
+  #      payload_off: "1"
+  #    - name: ArduinoAlarmActive
+  #      state_topic: "arduino01/pin3"
+  #      payload_on: "0"
+  #      payload_off: "1"
   alarm_control_panel:
     - name: Allarme
       code: !secret antifurto_code
@@ -115,19 +115,23 @@ sensor:
         icon_template: mdi:currency-eur
       costo_attuale_enel:
         friendly_name: "Costo attuale ENEL"
-        value_template: >-
+        value_template: >
           {% if states('sensor.pun_fascia_corrente') == "F1" %}
-          {{states('sensor.costo_enel_f1')}}
+            {{states('sensor.costo_enel_f1')}}
           {% endif %}
           {% if states('sensor.pun_fascia_corrente') == "F2" %}
-          {{states('sensor.costo_enel_f2')}}
+            {{states('sensor.costo_enel_f2')}}
           {% endif %}
           {% if states('sensor.pun_fascia_corrente') == "F3" %}
-          {{states('sensor.costo_enel_f3')}}
+            {{states('sensor.costo_enel_f3')}}
           {% endif %}
         unit_of_measurement: "€/kWh"
         device_class: monetary
         icon_template: mdi:currency-eur
+      consumo_enel:
+        value_template: "{{ [(states('sensor.enel_power') | int), 0] | max }}"
+        unit_of_measurement: "W"
+        device_class: energy
 
 calendar:
   - platform: caldav
