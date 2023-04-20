@@ -116,3 +116,18 @@
       message: Consumo eccessivo
       title: Allarme ENEL
   mode: single
+- id: '1682003330633'
+  alias: Internet Check
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.google_dns
+    to: unavailable
+  condition: []
+  action:
+  - service: notify.mobile_app_iphonesimone
+    data:
+      message: Internet Down !!!
+      title: Internet Check
+  mode: single
