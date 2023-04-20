@@ -161,6 +161,6 @@ influxdb:
 binary_sensor:
   - platform: ping
     host: 8.8.8.8
-    name: "device name"
+    name: "Google DNS"
     count: 2
     scan_interval: 60
