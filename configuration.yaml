@@ -164,4 +164,4 @@ binary_sensor:
     host: 8.8.8.8
     name: "Google DNS"
     count: 2
-    scan_interval: 60
+    scan_interval: 30
