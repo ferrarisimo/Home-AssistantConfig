@@ -131,3 +131,28 @@
       message: Internet Down !!!
       title: Internet Check
   mode: single
+- id: '1693257646595'
+  alias: Consumo eccessivo sommersa
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.enel_power
+    above: 3000
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 15
+  condition:
+  - condition: state
+    entity_id: switch.sommersa
+    state: 'on'
+  action:
+  - type: turn_off
+    device_id: 6e580837df791275dd996b56baef07c5
+    entity_id: 6e40559b747b261cb570683523a6d18e
+    domain: switch
+  - service: notify.mobile_app_iphonesimone
+    data:
+      message: consumo eccessivo ENEL
+      title: Spento sommersa
+  mode: single
