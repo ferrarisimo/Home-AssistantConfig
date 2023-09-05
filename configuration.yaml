@@ -124,6 +124,37 @@ sensor:
         value_template: "{{ [(states('sensor.enel_power') | int), 0] | max }}"
         unit_of_measurement: "W"
         device_class: energy
+      volumetrico1_battery_preserved:
+        friendly_name: Volumetrico1 Battery Preserved
+        icon_template: mdi:battery-90
+        unit_of_measurement: "%"
+        value_template: >-
+          {% if states('sensor.volumetrico1_battery') not in ['unknown', 'unavailable'] %}
+            {{ states('sensor.volumetrico1_battery') }}
+          {% else %}
+            {{ states('sensor.volumetrico1_battery_preserved') }}
+          {% endif %}
+      porta_ingresso_battery_preserved:
+        friendly_name: Porta Ingresso Battery Preserved
+        icon_template: mdi:battery-90
+        unit_of_measurement: "%"
+        value_template: >-
+          {% if states('sensor.porta_ingresso_battery') not in ['unknown', 'unavailable'] %}
+            {{ states('sensor.porta_ingresso_battery') }}
+          {% else %}
+            {{ states('sensor.porta_ingresso_battery_preserved') }}
+          {% endif %}
+      multiswitch1_battery_preserved:
+        friendly_name: Multi Switch1 Battery Preserved
+        icon_template: mdi:battery-90
+        unit_of_measurement: "%"
+        value_template: >-
+          {% if states('sensor.multiswitch1_battery') not in ['unknown', 'unavailable'] %}
+            {{ states('sensor.multiswitch1_battery') }}
+          {% else %}
+            {{ states('sensor.multiswitch1_battery_preserved') }}
+          {% endif %}
+
   - platform: integration
     source: sensor.enel_power
     name: consumo_enel_kwh
