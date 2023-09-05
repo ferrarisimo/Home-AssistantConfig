@@ -227,3 +227,17 @@
     title: Ford
     message: Diesel Al 10%
   mode: single
+- id: '1693909729977'
+  alias: MultiSwitch Luce Sala
+  description: ''
+  trigger:
+  - platform: mqtt
+    topic: zigbee2mqtt/multiSwitch1/action
+    payload: double_left
+  condition: []
+  action:
+  - type: toggle
+    device_id: 78446abf53c8b5c1e7b0d3fe9589501a
+    entity_id: 7a2d9ea2da8bc7bbb42257eeb339d9f2
+    domain: light
+  mode: single
