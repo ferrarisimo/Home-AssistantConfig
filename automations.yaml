@@ -241,3 +241,21 @@
     entity_id: 7a2d9ea2da8bc7bbb42257eeb339d9f2
     domain: light
   mode: single
+- id: '1694426735784'
+  alias: Check battery
+  description: ''
+  use_blueprint:
+    path: Sbyx/low-battery-level-detection-notification-for-all-battery-sensors.yaml
+    input:
+      time: '22:00:00'
+      exclude:
+        entity_id: []
+        device_id:
+        - 8eeb84d37d9af8dcf8c2306fcaabe778
+        - ded2b85eadb9f534a6dad609f98f4449
+        - faa7cc39496879d5280aad762f01726e
+      actions:
+      - service: notify.mobile_app_iphonesimone
+        data:
+          title: Battery check
+          message: Controllo stato batterie

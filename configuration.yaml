@@ -163,3 +163,7 @@ binary_sensor:
     name: "Google DNS"
     count: 2
     scan_interval: 30
+
+ariston:
+  username: !secret remocon_username
+  password: !secret remocon_password
