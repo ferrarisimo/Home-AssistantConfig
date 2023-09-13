@@ -124,7 +124,42 @@ sensor:
         value_template: "{{ [(states('sensor.enel_power') | int), 0] | max }}"
         unit_of_measurement: "W"
         device_class: energy
-
+      temperatura_ingresso:
+        friendly_name: "Temperatura ingresso"
+        unit_of_measurement: "°C"
+        value_template: "{{ state_attr('climate.termostato_ingresso', 'current_temperature') }}"
+      temperatura_cucina:
+        friendly_name: "Temperatura cucina"
+        unit_of_measurement: "°C"
+        value_template: "{{ state_attr('climate.termostato_cucina', 'current_temperature') }}"
+      temperatura_sala_2:
+        friendly_name: "Temperatura sala zona Finestre"
+        unit_of_measurement: "°C"
+        value_template: "{{ state_attr('climate.termostato_sala_2', 'current_temperature') }}"
+      temperatura_sala_tv:
+        friendly_name: "Temperatura sala zona TV"
+        unit_of_measurement: "°C"
+        value_template: "{{ state_attr('climate.termostato_sala_tv', 'current_temperature') }}"
+      temperatura_corridoio_1p:
+        friendly_name: "Temperatura corridoio 1P"
+        unit_of_measurement: "°C"
+        value_template: "{{ state_attr('climate.termostato_corridoio_1p', 'current_temperature') }}"
+      temperatura_matrimoniale:
+        friendly_name: "Temperatura camera matrimoniale"
+        unit_of_measurement: "°C"
+        value_template: "{{ state_attr('climate.termostato_camera_matrimoniale', 'current_temperature') }}"
+      temperatura_sofia:
+        friendly_name: "Temperatura camera Sofia"
+        unit_of_measurement: "°C"
+        value_template: "{{ state_attr('climate.termostato_sofia', 'current_temperature') }}"
+      temperatura_vittoria:
+        friendly_name: "Temperatura camera Vittoria"
+        unit_of_measurement: "°C"
+        value_template: "{{ state_attr('climate.termostato_vittoria', 'current_temperature') }}"
+      temperatura_gloisa:
+        friendly_name: "Temperatura camera Isabella Gloria"
+        unit_of_measurement: "°C"
+        value_template: "{{ state_attr('climate.termostato_gloisa', 'current_temperature') }}"
   #      sensor.zcs_pv_generation_total:
   #        friendly_name: ZCS PV generation total
   #        unit_of_measurement: Wh
@@ -163,32 +198,32 @@ binary_sensor:
     name: "Google DNS"
     count: 2
     scan_interval: 10
+#ariston:
+#  username: !secret remocon_username
+#  password: !secret remocon_password
+#  switches:
+#    - internet_time
+#    - internet_weather
+#  sensors:
+#    - ch_detected_temperature
+#    - ch_mode
+#    - ch_comfort_temperature
+#    - ch_economy_temperature
+#    #    - ch_gas_last_month
+#    #    - ch_set_temperature
+#    - dhw_set_temperature
+#    - dhw_gas_last_month
+#    - errors_count
+#    - mode
+#    - outside_temperature
+#    - ch_energy_today
+#    - dhw_energy_today
+#    - pressure
+#    - signal_strength
+#  binary_sensors:
+#    - changing_data
+#    - online
+#  selector:
+#    - mode
+#    - ch_mode
 
-ariston:
-  username: !secret remocon_username
-  password: !secret remocon_password
-  switches:
-    - internet_time
-    - internet_weather
-  sensors:
-    - ch_detected_temperature
-    - ch_mode
-    - ch_comfort_temperature
-    - ch_economy_temperature
-    #    - ch_gas_last_month
-    #    - ch_set_temperature
-    - dhw_set_temperature
-    - dhw_gas_last_month
-    - errors_count
-    - mode
-    - outside_temperature
-    - ch_energy_today
-    - dhw_energy_today
-    - pressure
-    - signal_strength
-  binary_sensors:
-    - changing_data
-    - online
-  selector:
-    - mode
-    - ch_mode

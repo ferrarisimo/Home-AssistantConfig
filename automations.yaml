@@ -131,7 +131,7 @@
   - platform: state
     entity_id:
     - binary_sensor.google_dns
-    to: unavailable
+    to: 'off'
   condition: []
   action:
   - service: notify.mobile_app_iphonesimone
