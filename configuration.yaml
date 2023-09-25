@@ -53,6 +53,9 @@ logbook:
       - sensor.time_utc
       - sensor.date_time_iso
       - sensor.time_date
+      - remote.smart_tv_pro
+      - media_player.smart_tv_pro
+      - media_player.android_tv_192_168_41_226
 
 # OpenWrt
 device_tracker:

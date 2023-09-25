@@ -115,14 +115,18 @@
     for:
       hours: 0
       minutes: 0
-      seconds: 10
-    above: 3000
+      seconds: 31
+    above: 3200
   condition: []
   action:
   - service: notify.mobile_app_iphonesimone
     data:
       message: Consumo eccessivo
       title: Allarme ENEL
+  - type: turn_off
+    device_id: 6542e3d77feed37923617feeb50c0a0a
+    entity_id: e7fd3b877444de070086f43a61107dd7
+    domain: switch
   mode: single
 - id: '1682003330633'
   alias: Internet Check
@@ -164,48 +168,6 @@
       message: consumo eccessivo ENEL
       title: Spento sommersa
   mode: single
-- id: '1693686538314'
-  alias: Test Switch 2xRX
-  description: ''
-  trigger:
-  - platform: mqtt
-    topic: zigbee2mqtt/multiSwitch1/action
-    payload: double_right
-  condition: []
-  action:
-  - service: notify.mobile_app_iphonesimone
-    data:
-      message: Test
-      title: test
-  mode: single
-- id: '1693687341896'
-  alias: Switch Portone SX
-  description: single_left
-  trigger:
-  - platform: mqtt
-    topic: zigbee2mqtt/multiSwitch1/action
-    payload: single_left
-  condition: []
-  action:
-  - type: turn_on
-    device_id: 6e580837df791275dd996b56baef07c5
-    entity_id: 8c69189975feafbd44c4de2ebcb1c61c
-    domain: switch
-  mode: single
-- id: '1693687381932'
-  alias: Switch Portone DX
-  description: single_right
-  trigger:
-  - platform: mqtt
-    topic: zigbee2mqtt/multiSwitch1/action
-    payload: single_right
-  condition: []
-  action:
-  - type: turn_on
-    device_id: 6e580837df791275dd996b56baef07c5
-    entity_id: 993d28dc79ae5b69fa613c2a01d158e1
-    domain: switch
-  mode: single
 - id: '1693737072938'
   alias: Controllo carburante Ford
   description: ''
@@ -228,18 +190,75 @@
     message: Diesel Al 10%
   mode: single
 - id: '1693909729977'
-  alias: MultiSwitch Luce Sala
+  alias: MultiSwitch1
   description: ''
   trigger:
   - platform: mqtt
     topic: zigbee2mqtt/multiSwitch1/action
     payload: double_left
+    id: double_left
+    alias: Luce Sala
+  - platform: mqtt
+    topic: zigbee2mqtt/multiSwitch1/action
+    payload: double_right
+    id: double_right
+    alias: Notifica di test
+  - platform: mqtt
+    topic: zigbee2mqtt/multiSwitch1/action
+    payload: single_left
+    id: single_left
+    alias: Portone Sinistro
+  - platform: mqtt
+    topic: zigbee2mqtt/multiSwitch1/action
+    payload: single_right
+    id: single_right
+    alias: Portone Destro
   condition: []
   action:
-  - type: toggle
-    device_id: 78446abf53c8b5c1e7b0d3fe9589501a
-    entity_id: 7a2d9ea2da8bc7bbb42257eeb339d9f2
-    domain: light
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - double_left
+      sequence:
+      - type: toggle
+        device_id: 78446abf53c8b5c1e7b0d3fe9589501a
+        entity_id: 7a2d9ea2da8bc7bbb42257eeb339d9f2
+        domain: light
+    alias: Action double_left
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - double_right
+      sequence:
+      - service: notify.mobile_app_iphonesimone
+        data:
+          message: premuto doppio tasto destro
+          title: Test multi switch
+    alias: Action double_right
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - single_left
+      sequence:
+      - type: toggle
+        device_id: 6e580837df791275dd996b56baef07c5
+        entity_id: 8c69189975feafbd44c4de2ebcb1c61c
+        domain: switch
+    alias: Action single_left
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - single_right
+      sequence:
+      - type: toggle
+        device_id: 6e580837df791275dd996b56baef07c5
+        entity_id: 993d28dc79ae5b69fa613c2a01d158e1
+        domain: switch
+    alias: Action single_right
   mode: single
 - id: '1694426735784'
   alias: Check battery
@@ -259,3 +278,51 @@
         data:
           title: Battery check
           message: Controllo stato batterie
+- id: '1694724007140'
+  alias: test riscaldamento
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - schedule.riscaldamento
+    from: 'off'
+    to: 'on'
+    id: to_on
+  - platform: state
+    entity_id:
+    - schedule.riscaldamento
+    from: 'on'
+    to: 'off'
+    id: to_off
+  condition:
+  - condition: state
+    entity_id: binary_sensor.ariston_holiday_mode
+    state: 'off'
+  action:
+  - if:
+    - condition: trigger
+      id:
+      - to_on
+    then:
+    - service: climate.set_temperature
+      data:
+        temperature: 22
+      target:
+        area_id:
+        - soggiorno
+        - cucina
+        - ingresso
+  - if:
+    - condition: trigger
+      id:
+      - to_off
+    then:
+    - service: climate.set_temperature
+      data:
+        temperature: 12
+      target:
+        area_id:
+        - cucina
+        - ingresso
+        - soggiorno
+  mode: single
