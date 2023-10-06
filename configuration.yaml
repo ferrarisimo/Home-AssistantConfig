@@ -201,32 +201,7 @@ binary_sensor:
     name: "Google DNS"
     count: 2
     scan_interval: 10
-#ariston:
-#  username: !secret remocon_username
-#  password: !secret remocon_password
-#  switches:
-#    - internet_time
-#    - internet_weather
-#  sensors:
-#    - ch_detected_temperature
-#    - ch_mode
-#    - ch_comfort_temperature
-#    - ch_economy_temperature
-#    #    - ch_gas_last_month
-#    #    - ch_set_temperature
-#    - dhw_set_temperature
-#    - dhw_gas_last_month
-#    - errors_count
-#    - mode
-#    - outside_temperature
-#    - ch_energy_today
-#    - dhw_energy_today
-#    - pressure
-#    - signal_strength
-#  binary_sensors:
-#    - changing_data
-#    - online
-#  selector:
-#    - mode
-#    - ch_mode
 
+shell_command:
+  start_pi_camera_video: ssh simone@192.168.41.162 -i /config/.ssh/id_ed25519 'sudo systemctl start remote_camera.service'
+  stop_pi_camera_video: ssh simone@192.168.41.162 -i /config/.ssh/id_ed25519 'sudo systemctl stop remote_camera.service'

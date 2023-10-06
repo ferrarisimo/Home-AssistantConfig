@@ -117,16 +117,77 @@
       minutes: 0
       seconds: 31
     above: 3200
+    id: Potenza alta
+  - platform: numeric_state
+    entity_id: sensor.enel_power
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 31
+    id: 'Potenza normale '
+    below: 2000
   condition: []
   action:
-  - service: notify.mobile_app_iphonesimone
-    data:
-      message: Consumo eccessivo
-      title: Allarme ENEL
-  - type: turn_off
-    device_id: 6542e3d77feed37923617feeb50c0a0a
-    entity_id: e7fd3b877444de070086f43a61107dd7
-    domain: switch
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - Potenza alta
+      - type: is_energy
+        condition: device
+        device_id: 6542e3d77feed37923617feeb50c0a0a
+        entity_id: 78fbcddbd4581d56c55d5af2dc4ff9c8
+        domain: sensor
+        above: 1000
+      sequence:
+      - type: turn_off
+        device_id: 6542e3d77feed37923617feeb50c0a0a
+        entity_id: e7fd3b877444de070086f43a61107dd7
+        domain: switch
+      - service: notify.mobile_app_iphonesimone
+        data:
+          message: 'Spento forno '
+          title: 'ENEL consumo eccessivo '
+    - conditions:
+      - condition: trigger
+        id:
+        - 'Potenza normale '
+      sequence:
+      - type: turn_on
+        device_id: 6542e3d77feed37923617feeb50c0a0a
+        entity_id: e7fd3b877444de070086f43a61107dd7
+        domain: switch
+    alias: Gestione forno
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - Potenza alta
+      - type: is_power
+        condition: device
+        device_id: 0ec0ef9d0d3e7dea053bf22aead72f5d
+        entity_id: 050763838a99beff0c272d32655e0ac3
+        domain: sensor
+        above: 1000
+      sequence:
+      - type: turn_off
+        device_id: 0ec0ef9d0d3e7dea053bf22aead72f5d
+        entity_id: 499c583f6bffd0bd270f2195ba0b015f
+        domain: switch
+      - service: notify.mobile_app_iphonesimone
+        data:
+          message: 'Spento induzione '
+          title: 'ENEL consumo eccessivo '
+    - conditions:
+      - condition: trigger
+        id:
+        - 'Potenza normale '
+      sequence:
+      - type: turn_on
+        device_id: 0ec0ef9d0d3e7dea053bf22aead72f5d
+        entity_id: 499c583f6bffd0bd270f2195ba0b015f
+        domain: switch
+    alias: 'Gestione induzione '
   mode: single
 - id: '1682003330633'
   alias: Internet Check
@@ -325,4 +386,22 @@
         - cucina
         - ingresso
         - soggiorno
+  mode: single
+- id: '1696031829651'
+  alias: 'Controllo frigorifero '
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.frigorifero
+    for:
+      hours: 1
+      minutes: 0
+      seconds: 0
+    above: 200
+  condition: []
+  action:
+  - service: notify.mobile_app_iphonesimone
+    data:
+      title: 'Frigorifero '
+      message: 'Controlla se la posta è aperta '
   mode: single
