@@ -197,6 +197,10 @@
     entity_id:
     - binary_sensor.google_dns
     to: 'off'
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 5
   condition: []
   action:
   - service: notify.mobile_app_iphonesimone
@@ -339,54 +343,6 @@
         data:
           title: Battery check
           message: Controllo stato batterie
-- id: '1694724007140'
-  alias: test riscaldamento
-  description: ''
-  trigger:
-  - platform: state
-    entity_id:
-    - schedule.riscaldamento
-    from: 'off'
-    to: 'on'
-    id: to_on
-  - platform: state
-    entity_id:
-    - schedule.riscaldamento
-    from: 'on'
-    to: 'off'
-    id: to_off
-  condition:
-  - condition: state
-    entity_id: binary_sensor.ariston_holiday_mode
-    state: 'off'
-  action:
-  - if:
-    - condition: trigger
-      id:
-      - to_on
-    then:
-    - service: climate.set_temperature
-      data:
-        temperature: 22
-      target:
-        area_id:
-        - soggiorno
-        - cucina
-        - ingresso
-  - if:
-    - condition: trigger
-      id:
-      - to_off
-    then:
-    - service: climate.set_temperature
-      data:
-        temperature: 12
-      target:
-        area_id:
-        - cucina
-        - ingresso
-        - soggiorno
-  mode: single
 - id: '1696031829651'
   alias: 'Controllo frigorifero '
   description: ''
@@ -404,4 +360,103 @@
     data:
       title: 'Frigorifero '
       message: 'Controlla se la posta è aperta '
+  mode: single
+- id: '1696601645342'
+  alias: Raspberry Camera
+  description: ''
+  trigger:
+  - type: motion
+    platform: device
+    device_id: 7cbd4db68ec25fc3901072ee7feeb5a6
+    entity_id: c4e962c94943a383a789cb5b89df0c50
+    domain: binary_sensor
+    id: Camera ON
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 3
+  - type: no_motion
+    platform: device
+    device_id: 7cbd4db68ec25fc3901072ee7feeb5a6
+    entity_id: c4e962c94943a383a789cb5b89df0c50
+    domain: binary_sensor
+    id: Camera OFF
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 10
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - Camera ON
+      sequence:
+      - service: shell_command.start_pi_camera_video
+        data: {}
+      - service: notify.mobile_app_iphonesimone
+        data:
+          title: Sensore movinento
+          message: Movimento in sala
+    - conditions:
+      - condition: trigger
+        id:
+        - Camera OFF
+      sequence:
+      - service: shell_command.stop_pi_camera_video
+        data: {}
+  mode: single
+- id: '1699824960449'
+  alias: Spegnimento caldaia con antifurto
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - alarm_control_panel.alarmo
+    from: disarmed
+    to: armed_away
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+    id: Antifurto attivo da 5 minuti
+  - platform: state
+    entity_id:
+    - alarm_control_panel.alarmo
+    from: armed_away
+    to: disarmed
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 0
+    id: Antifurto disattivato
+  condition:
+  - condition: numeric_state
+    entity_id: sensor.ariston_outside_temp
+    below: 15
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - Antifurto attivo da 5 minuti
+      sequence:
+      - device_id: 18903be5ec244baa96218345711b6889
+        domain: climate
+        entity_id: 41020373ee71dd3c59f0685c31f003b2
+        type: set_hvac_mode
+        hvac_mode: 'off'
+      alias: Spengo caldaia se allarme attivo
+    - conditions:
+      - condition: trigger
+        id:
+        - Antifurto disattivato
+      sequence:
+      - device_id: 18903be5ec244baa96218345711b6889
+        domain: climate
+        entity_id: 41020373ee71dd3c59f0685c31f003b2
+        type: set_hvac_mode
+        hvac_mode: auto
+      alias: Attivo caldaia se antifurto disattivato
   mode: single

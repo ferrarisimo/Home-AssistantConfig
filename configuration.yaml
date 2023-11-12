@@ -163,10 +163,14 @@ sensor:
         friendly_name: "Temperatura camera Isabella Gloria"
         unit_of_measurement: "°C"
         value_template: "{{ state_attr('climate.termostato_gloisa', 'current_temperature') }}"
-  #      sensor.zcs_pv_generation_total:
-  #        friendly_name: ZCS PV generation total
-  #        unit_of_measurement: Wh
-  #        value_template:
+      efficienza_pannelli_est:
+        friendly_name: "Percentuale efficienza pannelli EST"
+        unit_of_measurement: "%"
+        value_template: "{{ ((states('sensor.zcs_pv1_power ')|float) / (2050|float)) * (100|float) | round(2) }}"
+      efficienza_pannelli_sud:
+        friendly_name: "Percentuale efficienza pannelli SUD"
+        unit_of_measurement: "%"
+        value_template: "{{ ((states('sensor.zcs_pv2_power ')|float) / (2870|float)) * (100|float) | round(2) }}"
 
   - platform: integration
     source: sensor.enel_power
