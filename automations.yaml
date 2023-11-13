@@ -414,11 +414,11 @@
   - platform: state
     entity_id:
     - alarm_control_panel.alarmo
-    from: disarmed
+    from:
     to: armed_away
     for:
       hours: 0
-      minutes: 5
+      minutes: 0
       seconds: 0
     id: Antifurto attivo da 5 minuti
   - platform: state
