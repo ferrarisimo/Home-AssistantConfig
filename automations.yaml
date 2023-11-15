@@ -424,13 +424,13 @@
   - platform: state
     entity_id:
     - alarm_control_panel.alarmo
-    from: armed_away
-    to: disarmed
     for:
       hours: 0
       minutes: 0
-      seconds: 0
+      seconds: 10
     id: Antifurto disattivato
+    to: disarmed
+    from:
   condition:
   - condition: numeric_state
     entity_id: sensor.ariston_outside_temp
