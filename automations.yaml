@@ -241,12 +241,7 @@
     entity_id: sensor.fordpass_fuel
     attribute: fuelLevel
     below: 10
-  condition:
-  - condition: device
-    device_id: a1ecda20c5311c8fe9aa1335978d40c2
-    domain: device_tracker
-    entity_id: c3eabe014c4f47b5cdb11045abc40ebf
-    type: is_home
+  condition: []
   action:
   - device_id: 8eeb84d37d9af8dcf8c2306fcaabe778
     domain: mobile_app

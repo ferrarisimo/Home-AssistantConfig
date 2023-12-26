@@ -3,7 +3,7 @@ color_loop:
   use_blueprint:
     path: mdolnik/color_loop.yaml
     input:
-      light: light.luce_sala
+      light: light.presepe
       color_1:
       - 255
       - 250

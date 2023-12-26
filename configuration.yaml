@@ -11,6 +11,10 @@ frontend:
 # Text to speech
 tts:
   - platform: google_translate
+    cache: true
+    cache_dir: /tmp/tts
+    time_memory: 300
+    language: "it"
 
 automation: !include automations.yaml
 script: !include scripts.yaml
@@ -175,6 +179,10 @@ sensor:
         friendly_name: "Percentuale efficienza media pannelli"
         unit_of_measurement: "%"
         value_template: "{{ (((states('sensor.efficienza_pannelli_est')|float) + (states('sensor.efficienza_pannelli_sud')|float)) / (2|float)) | round(0) }}"
+      in_out_fotovoltaico:
+        friendly_name: "Produzione Vendita Fotovoltaico"
+        unit_of_measurement: "W"
+        value_template: "{{ ((states('sensor.zcs_activepower_pcc_total')|int) * -1) }}"
 
   - platform: integration
     source: sensor.enel_power
@@ -182,13 +190,13 @@ sensor:
     unit_prefix: k
     round: 2
 
-calendar:
-  - platform: caldav
-    url: https://caldav.icloud.com
-    username: !secret icloud_user
-    password: !secret icloud_pwd
-    calendars:
-      - Family
+#calendar:
+#  - platform: caldav
+#    url: https://caldav.icloud.com
+#    username: !secret icloud_user
+#    password: !secret icloud_pwd
+#    calendars:
+#      - Family
 
 influxdb:
   host: 192.168.42.10
@@ -203,13 +211,20 @@ influxdb:
       - sensor
       - binary_sensor
 
-binary_sensor:
-  - platform: ping
-    host: 8.8.8.8
-    name: "Google DNS"
-    count: 2
-    scan_interval: 10
-
 shell_command:
   start_pi_camera_video: ssh simone@192.168.41.162 -i /config/.ssh/id_ed25519 'sudo systemctl start remote_camera.service'
   stop_pi_camera_video: ssh simone@192.168.41.162 -i /config/.ssh/id_ed25519 'sudo systemctl stop remote_camera.service'
+
+switch:
+  - platform: template
+    switches:
+      alexa_cucina_motion:
+        friendly_name: "Alexa cucina motion detection"
+        turn_on:
+          service: script.turn_on
+          data:
+            entity_id: script.null
+        turn_off:
+          service: script.turn_on
+          data:
+            entity_id: script.null
