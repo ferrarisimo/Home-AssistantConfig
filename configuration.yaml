@@ -8,6 +8,8 @@ homeassistant:
 frontend:
   themes: !include_dir_merge_named themes
 
+python_script:
+
 # Text to speech
 tts:
   - platform: google_translate
@@ -96,19 +98,19 @@ sensor:
     sensors:
       costo_enel_f1:
         friendly_name: "Costo ENEL Fascia 1"
-        value_template: "{{ ((states('sensor.pun_fascia_f1')|float) + (0.077|float)) | round(2) }}"
+        value_template: "{{ ((states('sensor.pun_fascia_f1')|float(0)) + (0.077|float(0))) | round(2) }}"
         unit_of_measurement: "€/kWh"
         device_class: monetary
         icon_template: mdi:currency-eur
       costo_enel_f2:
         friendly_name: "Costo ENEL Fascia 2"
-        value_template: "{{ ((states('sensor.pun_fascia_f2')|float) + (0.077|float)) | round(2) }}"
+        value_template: "{{ ((states('sensor.pun_fascia_f2')|float(0)) + (0.077|float(0))) | round(2) }}"
         unit_of_measurement: "€/kWh"
         device_class: monetary
         icon_template: mdi:currency-eur
       costo_enel_f3:
         friendly_name: "Costo ENEL Fascia 3"
-        value_template: "{{ ((states('sensor.pun_fascia_f3')|float) + (0.027|float)) | round(2) }}"
+        value_template: "{{ ((states('sensor.pun_fascia_f3')|float(0)) + (0.027|float(0))) | round(2) }}"
         unit_of_measurement: "€/kWh"
         device_class: monetary
         icon_template: mdi:currency-eur
@@ -170,19 +172,19 @@ sensor:
       efficienza_pannelli_est:
         friendly_name: "Percentuale efficienza pannelli EST"
         unit_of_measurement: "%"
-        value_template: "{{ ((states('sensor.zcs_pv1_power')|float) / (2050|float) * (100|float)) | round(0) }}"
+        value_template: "{{ ((states('sensor.zcs_pv1_power')|float(0)) / (2050|float) * (100|float)) | round(0) }}"
       efficienza_pannelli_sud:
         friendly_name: "Percentuale efficienza pannelli SUD"
         unit_of_measurement: "%"
-        value_template: "{{ ((states('sensor.zcs_pv2_power')|float) / (2870|float) * (100|float)) | round(0) }}"
+        value_template: "{{ ((states('sensor.zcs_pv2_power')|float(0)) / (2870|float) * (100|float)) | round(0) }}"
       efficienza_pannelli_media:
         friendly_name: "Percentuale efficienza media pannelli"
         unit_of_measurement: "%"
-        value_template: "{{ (((states('sensor.efficienza_pannelli_est')|float) + (states('sensor.efficienza_pannelli_sud')|float)) / (2|float)) | round(0) }}"
+        value_template: "{{ (((states('sensor.efficienza_pannelli_est')|float(0)) + (states('sensor.efficienza_pannelli_sud')|float(0))) / (2|float)) | round(0) }}"
       in_out_fotovoltaico:
         friendly_name: "Produzione Vendita Fotovoltaico"
         unit_of_measurement: "W"
-        value_template: "{{ ((states('sensor.zcs_activepower_pcc_total')|int) * -1) }}"
+        value_template: "{{ ((states('sensor.zcs_activepower_pcc_total')|int(0)) * -1) }}"
 
   - platform: integration
     source: sensor.enel_power
@@ -214,6 +216,9 @@ influxdb:
 shell_command:
   start_pi_camera_video: ssh simone@192.168.41.162 -i /config/.ssh/id_ed25519 'sudo systemctl start remote_camera.service'
   stop_pi_camera_video: ssh simone@192.168.41.162 -i /config/.ssh/id_ed25519 'sudo systemctl stop remote_camera.service'
+  stop_nextdns: ssh root@192.168.41.2 -i /data/.ssh/id_ed25519 'nextdns stop'
+  start_nextdns: ssh root@192.168.41.2 -i /data/.ssh/id_ed25519 'nextdns start'
+  status_nextdns: ssh root@192.168.41.2 -i /data/.ssh/id_ed25519 'nextdns status'
 
 switch:
   - platform: template
@@ -228,3 +233,13 @@ switch:
           service: script.turn_on
           data:
             entity_id: script.null
+      nextdns_service:
+        friendly_name: "Servizio NextDNS"
+        turn_on:
+          service: script.start_nextdns
+          data:
+            entity_id: script.start_nextdns
+        turn_off:
+          service: script.stop_nextdns
+          data:
+            entity_id: script.stop_nextdns

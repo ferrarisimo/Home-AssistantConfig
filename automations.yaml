@@ -62,73 +62,68 @@
     entity_id: bd82a07bc1e4b2a900180385a3afc101
     type: disarm
   mode: single
-- id: '1671287579970'
-  alias: Presa Bagno 1P con sovraccarico
-  description: ''
-  trigger:
-  - platform: numeric_state
-    entity_id: sensor.enel_power
-    above: 3000
-    for:
-      hours: 0
-      minutes: 0
-      seconds: 15
-  condition:
-  - condition: numeric_state
-    entity_id: sensor.presabagno1p_power
-    above: 495.8
-  action:
-  - type: turn_off
-    device_id: c55adb949eaa2b76dbed8b7b2a731e92
-    entity_id: switch.presabagno1p
-    domain: switch
-  mode: single
-- id: '1671288251960'
-  alias: Presa Bagno 1P - Attiva
-  description: ''
-  trigger:
-  - platform: numeric_state
-    entity_id: sensor.enel_power
-    for:
-      hours: 0
-      minutes: 0
-      seconds: 15
-    below: 2000
-  condition:
-  - condition: device
-    type: is_off
-    device_id: c55adb949eaa2b76dbed8b7b2a731e92
-    entity_id: switch.presabagno1p
-    domain: switch
-  action:
-  - type: turn_on
-    device_id: c55adb949eaa2b76dbed8b7b2a731e92
-    entity_id: switch.presabagno1p
-    domain: switch
-  mode: single
 - id: '1671290604302'
   alias: ENEL - Consumo eccessivo
   description: ''
   trigger:
   - platform: numeric_state
-    entity_id: sensor.enel_power
+    entity_id:
+    - sensor.enel_power
     for:
       hours: 0
-      minutes: 0
-      seconds: 31
+      minutes: 1
+      seconds: 0
     above: 3200
     id: Potenza alta
   - platform: numeric_state
-    entity_id: sensor.enel_power
+    entity_id:
+    - sensor.enel_power
     for:
       hours: 0
-      minutes: 0
-      seconds: 31
+      minutes: 1
+      seconds: 0
     id: 'Potenza normale '
     below: 2000
   condition: []
   action:
-  - choose:
+  - alias: Gestione presa Bagno 1P
+    choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - Potenza alta
+      - type: is_power
+        condition: device
+        device_id: 08641127e7b8b7331f45b11eadb167fe
+        entity_id: 111e3c72b834b89c130abd08c6e655be
+        domain: sensor
+        above: 1000
+      sequence:
+      - type: turn_off
+        device_id: 08641127e7b8b7331f45b11eadb167fe
+        entity_id: 3bbbece4dfee4783ee206fc2c69ab355
+        domain: switch
+      - service: notify.mobile_app_iphonesimone
+        data:
+          message: 'Spento presa elettrica bagno '
+          title: 'ENEL consumo eccessivo '
+      - service: notify.alexa_media_echo_show_di_simone
+        metadata: {}
+        data:
+          title: Consumo ENEL
+          message: 'Attenzione: consumo ENEL eccessivo, ho spento la presa elettrica
+            in bagno'
+    - conditions:
+      - condition: trigger
+        id:
+        - 'Potenza normale '
+      sequence:
+      - type: turn_on
+        device_id: 08641127e7b8b7331f45b11eadb167fe
+        entity_id: 3bbbece4dfee4783ee206fc2c69ab355
+        domain: switch
+  - alias: Gestione forno
+    choose:
     - conditions:
       - condition: trigger
         id:
@@ -148,6 +143,11 @@
         data:
           message: 'Spento forno '
           title: 'ENEL consumo eccessivo '
+      - service: notify.alexa_media_echo_show_di_simone
+        metadata: {}
+        data:
+          title: Consumo ENEL
+          message: 'Attenzione: consumo ENEL eccessivo, ho spento il forno'
     - conditions:
       - condition: trigger
         id:
@@ -157,37 +157,87 @@
         device_id: 6542e3d77feed37923617feeb50c0a0a
         entity_id: e7fd3b877444de070086f43a61107dd7
         domain: switch
-    alias: Gestione forno
-  - choose:
+  - alias: Gestione induzione
+    choose:
     - conditions:
       - condition: trigger
         id:
         - Potenza alta
       - type: is_power
         condition: device
-        device_id: 0ec0ef9d0d3e7dea053bf22aead72f5d
-        entity_id: 050763838a99beff0c272d32655e0ac3
+        device_id: 97d570be3cce2615bc2c4f922b3b7649
+        entity_id: 3d9a6fc94a5c556f09fd69b6911720dd
         domain: sensor
         above: 1000
       sequence:
       - type: turn_off
-        device_id: 0ec0ef9d0d3e7dea053bf22aead72f5d
-        entity_id: 499c583f6bffd0bd270f2195ba0b015f
+        device_id: 97d570be3cce2615bc2c4f922b3b7649
+        entity_id: 4f10ae17a7527db4e1f9863dc3f1e5c9
         domain: switch
       - service: notify.mobile_app_iphonesimone
         data:
           message: 'Spento induzione '
           title: 'ENEL consumo eccessivo '
+      - service: notify.alexa_media_echo_show_di_simone
+        metadata: {}
+        data:
+          title: Consumo ENEL
+          message: 'Attenzione: consumo ENEL eccessivo, ho spento il piano induzione'
     - conditions:
       - condition: trigger
         id:
         - 'Potenza normale '
       sequence:
       - type: turn_on
-        device_id: 0ec0ef9d0d3e7dea053bf22aead72f5d
-        entity_id: 499c583f6bffd0bd270f2195ba0b015f
+        device_id: 97d570be3cce2615bc2c4f922b3b7649
+        entity_id: 4f10ae17a7527db4e1f9863dc3f1e5c9
         domain: switch
-    alias: 'Gestione induzione '
+  - alias: Gestione Microonde
+    choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - Potenza alta
+      - type: is_power
+        condition: device
+        device_id: 10484a0a7b9ca38a7b42b8647f9d096d
+        entity_id: 4d70a9547d6eb9e50398a9f91e98ab36
+        domain: sensor
+        above: 800
+      sequence:
+      - type: turn_off
+        device_id: 10484a0a7b9ca38a7b42b8647f9d096d
+        entity_id: cd10d3f4785e3a776677fe887f0fa713
+        domain: switch
+      - service: notify.mobile_app_iphonesimone
+        data:
+          message: Spento microonde
+          title: 'ENEL consumo eccessivo '
+      - service: notify.alexa_media_echo_show_di_simone
+        metadata: {}
+        data:
+          title: Consumo ENEL
+          message: 'Attenzione: consumo ENEL eccessivo, ho spento il microonde'
+    - conditions:
+      - condition: trigger
+        id:
+        - 'Potenza normale '
+      sequence:
+      - type: turn_off
+        device_id: 10484a0a7b9ca38a7b42b8647f9d096d
+        entity_id: cd10d3f4785e3a776677fe887f0fa713
+        domain: switch
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - Potenza alta
+      sequence:
+      - service: notify.alexa_media_echo_show_di_simone
+        metadata: {}
+        data:
+          message: 'Attenzione: consumo ENEL eccessivo, spegni qualcosa'
+          title: Consumo ENEL
   mode: single
 - id: '1682003330633'
   alias: Internet Check
@@ -237,17 +287,23 @@
   alias: Controllo carburante Ford
   description: ''
   trigger:
-  - platform: numeric_state
-    entity_id: sensor.fordpass_fuel
-    attribute: fuelLevel
-    below: 10
+  - type: value
+    platform: device
+    device_id: a1ecda20c5311c8fe9aa1335978d40c2
+    entity_id: 9d554b9ea85bd482877ebaf1e13c56dc
+    domain: sensor
+    below: 15
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 30
   condition: []
   action:
   - device_id: 8eeb84d37d9af8dcf8c2306fcaabe778
     domain: mobile_app
     type: notify
     title: Ford
-    message: Diesel Al 10%
+    message: Diesel sotto il 15%
   mode: single
 - id: '1693909729977'
   alias: MultiSwitch1
@@ -338,6 +394,8 @@
         data:
           title: Battery check
           message: Controllo stato batterie
+          data:
+            '[object Object]':
 - id: '1696031829651'
   alias: 'Controllo frigorifero '
   description: ''
@@ -454,4 +512,61 @@
         type: set_hvac_mode
         hvac_mode: auto
       alias: Attivo caldaia se antifurto disattivato
+  mode: single
+- id: '1704410536174'
+  alias: Possibile sovraccarico
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.stato_forno
+    to: 'on'
+  - platform: state
+    entity_id:
+    - binary_sensor.stato_induzione
+    to: 'on'
+  - platform: state
+    entity_id:
+    - binary_sensor.stato_lavastoviglie
+    to: 'on'
+  - platform: state
+    entity_id:
+    - binary_sensor.stato_microonde
+    to: 'on'
+  - platform: state
+    entity_id:
+    - binary_sensor.stato_lavatrice
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: binary_sensor.gruppo_elettrodomestici
+    state: 'on'
+  action:
+  - service: notify.mobile_app_iphonesimone
+    metadata: {}
+    data:
+      message: Possibile sovraccarico elettrico
+      title: Attenzione
+  mode: single
+- id: '1707761489901'
+  alias: Temp-carcica
+  description: ''
+  trigger:
+  - type: power
+    platform: device
+    device_id: 70f9ce2f33b4ab8ff9ef9f4f5008719a
+    entity_id: 84db7832ff40bcf7b866a17bc3310ae0
+    domain: sensor
+    below: 1
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 30
+  condition: []
+  action:
+  - service: notify.mobile_app_iphonesimone
+    metadata: {}
+    data:
+      title: 'Portatile '
+      message: 'Carica completa '
   mode: single
