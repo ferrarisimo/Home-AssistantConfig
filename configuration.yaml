@@ -200,18 +200,18 @@ sensor:
 #    calendars:
 #      - Family
 
-influxdb:
-  host: 192.168.42.10
-  port: 8086
-  database: homeassistant
-  username: !secret influxdb_user
-  password: !secret influxdb_password
-  max_retries: 3
-  measurement_attr: entity_id
-  include:
-    domains:
-      - sensor
-      - binary_sensor
+#influxdb:
+#  host: 192.168.42.10
+#  port: 8086
+#  database: homeassistant
+#  username: !secret influxdb_user
+#  password: !secret influxdb_password
+#  max_retries: 3
+#  measurement_attr: entity_id
+#  include:
+#    domains:
+#      - sensor
+#      - binary_sensor
 
 shell_command:
   start_pi_camera_video: ssh simone@192.168.41.162 -i /config/.ssh/id_ed25519 'sudo systemctl start remote_camera.service'

@@ -223,7 +223,7 @@
         id:
         - 'Potenza normale '
       sequence:
-      - type: turn_off
+      - type: turn_on
         device_id: 10484a0a7b9ca38a7b42b8647f9d096d
         entity_id: cd10d3f4785e3a776677fe887f0fa713
         domain: switch
