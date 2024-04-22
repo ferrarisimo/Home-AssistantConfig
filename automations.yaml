@@ -377,7 +377,7 @@
     alias: Action single_right
   mode: single
 - id: '1694426735784'
-  alias: Check battery
+  alias: Controllo batterie
   description: ''
   use_blueprint:
     path: Sbyx/low-battery-level-detection-notification-for-all-battery-sensors.yaml
@@ -548,25 +548,98 @@
       message: Possibile sovraccarico elettrico
       title: Attenzione
   mode: single
-- id: '1707761489901'
-  alias: Temp-carcica
+- id: '1713530623868'
+  alias: Record produzione fotovoltaico
   description: ''
   trigger:
-  - type: power
-    platform: device
-    device_id: 70f9ce2f33b4ab8ff9ef9f4f5008719a
-    entity_id: 84db7832ff40bcf7b866a17bc3310ae0
-    domain: sensor
-    below: 1
-    for:
-      hours: 0
-      minutes: 0
-      seconds: 30
-  condition: []
+  - platform: time_pattern
+    seconds: '30'
+  condition:
+  - condition: numeric_state
+    entity_id: sensor.produzione_attuale_fotovoltaico
+    above: input_number.record_produzione_fotovoltaico
   action:
+  - service: input_number.set_value
+    data_template:
+      entity_id: input_number.record_produzione_fotovoltaico
+      value: '{{ states(''sensor.produzione_attuale_fotovoltaico'') }}'
+  - service: input_text.set_value
+    metadata: {}
+    data:
+      value: 'Il {{ as_timestamp(states(''sensor.date_time_iso'')) | timestamp_custom(''%-d
+        %b %Y, %I:%M %p'') }} è stato di: {{     states(''sensor.produzione_attuale_fotovoltaico'')
+        }} W'
+    target:
+      entity_id: input_text.record_produzione_fotovoltaico_text
   - service: notify.mobile_app_iphonesimone
     metadata: {}
     data:
-      title: 'Portatile '
-      message: 'Carica completa '
+      title: Fotovoltaico
+      message: 'Nuovo record di produzione: {{         states(''sensor.produzione_attuale_fotovoltaico'')
+        }} W'
+    enabled: false
+  mode: single
+- id: '1713791127575'
+  alias: Comandi portoni Garage
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - input_button.portone_dx
+    id: Portone DX
+  - platform: state
+    entity_id:
+    - input_button.portone_sx
+    id: Portone SX
+  condition: []
+  action:
+  - if:
+    - condition: trigger
+      id:
+      - Portone DX
+    then:
+    - type: toggle
+      device_id: 6e580837df791275dd996b56baef07c5
+      entity_id: 993d28dc79ae5b69fa613c2a01d158e1
+      domain: switch
+  - if:
+    - condition: trigger
+      id:
+      - Portone SX
+    then:
+    - type: toggle
+      device_id: 6e580837df791275dd996b56baef07c5
+      entity_id: 8c69189975feafbd44c4de2ebcb1c61c
+      domain: switch
+  mode: single
+- id: '1713791739914'
+  alias: Comandi Cancello
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - input_button.aziona_cancello
+    id: Aziona Cancello
+  - platform: state
+    entity_id:
+    - input_button.apri_e_blocca_cancello
+    id: Apri e blocca Cancello
+  condition: []
+  action:
+  - if:
+    - condition: trigger
+      id:
+      - Aziona Cancello
+    then:
+    - service: script.pulsante_cancello
+      metadata: {}
+      data: {}
+  - if:
+    - condition: trigger
+      id:
+      - Apri e blocca Cancello
+    then:
+    - service: script.blocca_il_cancello
+      metadata: {}
+      data: {}
   mode: single

@@ -92,6 +92,7 @@ mqtt:
       payload_arm_away: armed_away
       payload_disarm: disarmed
       qos: 2
+  sensor: !include openwrt.yaml
 
 sensor:
   - platform: template
@@ -132,7 +133,7 @@ sensor:
       consumo_enel:
         value_template: "{{ [(states('sensor.enel_power') | int), 0] | max }}"
         unit_of_measurement: "W"
-        device_class: energy
+        device_class: power
       temperatura_ingresso:
         friendly_name: "Temperatura ingresso"
         unit_of_measurement: "°C"
@@ -200,18 +201,17 @@ sensor:
 #    calendars:
 #      - Family
 
-#influxdb:
-#  host: 192.168.42.10
-#  port: 8086
-#  database: homeassistant
-#  username: !secret influxdb_user
-#  password: !secret influxdb_password
-#  max_retries: 3
-#  measurement_attr: entity_id
-#  include:
-#    domains:
-#      - sensor
-#      - binary_sensor
+influxdb:
+  host: 192.168.42.10
+  port: 8086
+  database: home
+  username: !secret influxdb_user
+  password: !secret influxdb_password
+  max_retries: 3
+  measurement_attr: entity_id
+  include:
+    domains:
+      - sensor
 
 shell_command:
   start_pi_camera_video: ssh simone@192.168.41.162 -i /config/.ssh/id_ed25519 'sudo systemctl start remote_camera.service'

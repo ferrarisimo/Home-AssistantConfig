@@ -1,0 +1,311 @@
+- name: OpenWRT RAM buffered
+  state_topic: collectd/OpenWrt/memory/memory-buffered
+  unit_of_measurement: MB
+  value_template: "{{ value.split(':')[1].split('\x00')[0] | float / 1000000 }}"
+  unique_id: ram_buffered
+  device:
+    identifiers: Linksys
+    name: Router Casa
+    model: WRT1200AC
+    manufacturer: Linksys
+- name: OpenWRT RAM free
+  state_topic: collectd/OpenWrt/memory/memory-free
+  unit_of_measurement: MB
+  value_template: "{{ value.split(':')[1].split('\x00')[0] | float / 1000000 }}"
+  unique_id: ram_free
+  device:
+    identifiers: Linksys
+    name: Router Casa
+    model: WRT1200AC
+    manufacturer: Linksys
+- name: OpenWRT RAM cached
+  state_topic: collectd/OpenWrt/memory/memory-cached
+  unit_of_measurement: MB
+  value_template: "{{ value.split(':')[1].split('\x00')[0] | float / 1000000 }}"
+  unique_id: ram_cached
+  device:
+    identifiers: Linksys
+    name: Router Casa
+    model: WRT1200AC
+    manufacturer: Linksys
+- name: OpenWRT RAM used
+  state_topic: collectd/OpenWrt/memory/memory-used
+  unit_of_measurement: MB
+  value_template: "{{ value.split(':')[1].split('\x00')[0] | float / 1000000 }}"
+  unique_id: ram_used
+  device:
+    identifiers: Linksys
+    name: Router Casa
+    model: WRT1200AC
+    manufacturer: Linksys
+
+# load
+- name: OpenWRT L1
+  unit_of_measurement: load
+  state_topic: collectd/OpenWrt/load/load
+  value_template: "{{ value.split(':')[1] | float }}"
+  unique_id: L1
+  device:
+    identifiers: Linksys
+    name: Router Casa
+    model: WRT1200AC
+    manufacturer: Linksys
+- name: OpenWRT L5
+  unit_of_measurement: load
+  state_topic: collectd/OpenWrt/load/load
+  value_template: "{{ value.split(':')[2] | float }}"
+  unique_id: L5
+  device:
+    identifiers: Linksys
+    name: Router Casa
+    model: WRT1200AC
+    manufacturer: Linksys
+- name: OpenWRT L15
+  unit_of_measurement: load
+  state_topic: collectd/OpenWrt/load/load
+  value_template: "{{ value.split(':')[3].split('\x00')[0] | float }}"
+  unique_id: L15
+  device:
+    identifiers: Linksys
+    name: Router Casa
+    model: WRT1200AC
+    manufacturer: Linksys
+
+# br-lan interface
+- name: OpenWRT br-lan errors
+  state_topic: collectd/OpenWrt/interface-br-lan/if_errors
+  unit_of_measurement: packets
+  value_template: "{{ value.split(':')[1] | int + value.split(':')[2].split('\x00')[0] | int }}"
+  unique_id: br-lan-errors
+  device:
+    identifiers: Linksys
+    name: Router Casa
+    model: WRT1200AC
+    manufacturer: Linksys
+- name: OpenWRT br-lan dropped
+  state_topic: collectd/OpenWrt/interface-br-lan/if_dropped
+  unit_of_measurement: packets
+  value_template: "{{ value.split(':')[1] | int + value.split(':')[2].split('\x00')[0] | int }}"
+  unique_id: br-lan-dropped
+  device:
+    identifiers: Linksys
+    name: Router Casa
+    model: WRT1200AC
+    manufacturer: Linksys
+- name: OpenWRT br-lan TX Mb/s
+  state_topic: collectd/OpenWrt/interface-br-lan/if_octets
+  unit_of_measurement: Mb/s
+  value_template: "{{ value.split(':')[1] | float / 131072}}"
+  unique_id: br-lan-tx-transfer
+  device:
+    identifiers: Linksys
+    name: Router Casa
+    model: WRT1200AC
+    manufacturer: Linksys
+- name: OpenWRT br-lan RX Mb/s
+  state_topic: collectd/OpenWrt/interface-br-lan/if_octets
+  unit_of_measurement: Mb/s
+  value_template: "{{ value.split(':')[2].split('\x00')[0] | float / 131072 }}"
+  unique_id: br-lan-rx-transfer
+  device:
+    identifiers: Linksys
+    name: Router Casa
+    model: WRT1200AC
+    manufacturer: Linksys
+- name: OpenWRT br-lan packets
+  state_topic: collectd/OpenWrt/interface-br-lan/if_packets
+  unit_of_measurement: packets/s
+  value_template: "{{ value.split(':')[1] | int + value.split(':')[2].split('\x00')[0] | int }}"
+  unique_id: br-lan-packets
+  device:
+    identifiers: Linksys
+    name: Router Casa
+    model: WRT1200AC
+    manufacturer: Linksys
+
+# br-iot interface
+- name: OpenWRT br-iot errors
+  state_topic: collectd/OpenWrt/interface-br-iot/if_errors
+  unit_of_measurement: packets
+  value_template: "{{ value.split(':')[1] | int + value.split(':')[2].split('\x00')[0] | int }}"
+  unique_id: br-iot-errors
+  device:
+    identifiers: Linksys
+    name: Router Casa
+    model: WRT1200AC
+    manufacturer: Linksys
+- name: OpenWRT br-iot dropped
+  state_topic: collectd/OpenWrt/interface-br-iot/if_dropped
+  unit_of_measurement: packets
+  value_template: "{{ value.split(':')[1] | int + value.split(':')[2].split('\x00')[0] | int }}"
+  unique_id: br-iot-dropped
+  device:
+    identifiers: Linksys
+    name: Router Casa
+    model: WRT1200AC
+    manufacturer: Linksys
+- name: OpenWRT br-iot TX Mb/s
+  state_topic: collectd/OpenWrt/interface-br-iot/if_octets
+  unit_of_measurement: Mb/s
+  value_template: "{{ value.split(':')[1] | float / 131072}}"
+  unique_id: br-iot-tx-transfer
+  device:
+    identifiers: Linksys
+    name: Router Casa
+    model: WRT1200AC
+    manufacturer: Linksys
+- name: OpenWRT br-iot RX Mb/s
+  state_topic: collectd/OpenWrt/interface-br-iot/if_octets
+  unit_of_measurement: Mb/s
+  value_template: "{{ value.split(':')[2].split('\x00')[0] | float / 131072 }}"
+  unique_id: br-iot-rx-transfer
+  device:
+    identifiers: Linksys
+    name: Router Casa
+    model: WRT1200AC
+    manufacturer: Linksys
+- name: OpenWRT br-iot packets
+  state_topic: collectd/OpenWrt/interface-br-iot/if_packets
+  unit_of_measurement: packets/s
+  value_template: "{{ value.split(':')[1] | int + value.split(':')[2].split('\x00')[0] | int }}"
+  unique_id: br-iot-packets
+  device:
+    identifiers: Linksys
+    name: Router Casa
+    model: WRT1200AC
+    manufacturer: Linksys
+
+# wan interface
+- name: OpenWRT wan errors
+  state_topic: collectd/OpenWrt/interface-wan/if_errors
+  unit_of_measurement: packets
+  value_template: "{{ value.split(':')[1] | int + value.split(':')[2].split('\x00')[0] | int }}"
+  unique_id: wan-errors
+  device:
+    identifiers: Linksys
+    name: Router Casa
+    model: WRT1200AC
+    manufacturer: Linksys
+- name: OpenWRT wan dropped
+  state_topic: collectd/OpenWrt/interface-wan/if_dropped
+  unit_of_measurement: packets
+  value_template: "{{ value.split(':')[1] | int + value.split(':')[2].split('\x00')[0] | int }}"
+  unique_id: wan-dropped
+  device:
+    identifiers: Linksys
+    name: Router Casa
+    model: WRT1200AC
+    manufacturer: Linksys
+- name: OpenWRT wan TX Mb/s
+  state_topic: collectd/OpenWrt/interface-wan/if_octets
+  unit_of_measurement: Mb/s
+  value_template: "{{ value.split(':')[1] | float / 131072}}"
+  unique_id: wan-tx-transfer
+  device:
+    identifiers: Linksys
+    name: Router Casa
+    model: WRT1200AC
+    manufacturer: Linksys
+- name: OpenWRT wan RX Mb/s
+  state_topic: collectd/OpenWrt/interface-wan/if_octets
+  unit_of_measurement: Mb/s
+  value_template: "{{ value.split(':')[2].split('\x00')[0] | float / 131072 }}"
+  unique_id: wan-rx-transfer
+  device:
+    identifiers: Linksys
+    name: Router Casa
+    model: WRT1200AC
+    manufacturer: Linksys
+- name: OpenWRT wan packets
+  state_topic: collectd/OpenWrt/interface-wan/if_packets
+  unit_of_measurement: packets/s
+  value_template: "{{ value.split(':')[1] | int + value.split(':')[2].split('\x00')[0] | int }}"
+  unique_id: wan-packets
+  device:
+    identifiers: Linksys
+    name: Router Casa
+    model: WRT1200AC
+    manufacturer: Linksys
+
+# uptime
+- name: OpenWRT uptime
+  state_topic: collectd/OpenWrt/uptime/uptime
+  unit_of_measurement: days
+  value_template: "{{ (value.split(':')[1].split('\x00')[0] | float / 86400) | round(1) }}"
+  unique_id: ap_uptime
+  device:
+    identifiers: Linksys
+    name: Router Casa
+    model: WRT1200AC
+    manufacturer: Linksys
+# ping
+- name: OpenWRT google ping
+  state_topic: collectd/OpenWrt/ping/ping-8.8.8.8
+  unit_of_measurement: ms
+  value_template: "{{ value.split(':')[1].split('\x00')[0] | float | round(2) }}"
+  unique_id: ap_ping
+  device:
+    identifiers: Linksys
+    name: Router Casa
+    model: WRT1200AC
+    manufacturer: Linksys
+
+# connections
+- name: OpenWRT connections
+  state_topic: collectd/OpenWrt/conntrack/conntrack
+  unit_of_measurement: connections
+  value_template: "{{ value.split(':')[1].split('\x00')[0] | int }}"
+  unique_id: ap_connections
+  device:
+    identifiers: Linksys
+    name: Router Casa
+    model: WRT1200AC
+    manufacturer: Linksys
+
+# 2.4 ghz clients
+- name: OpenWRT VillaSole_PT_2.4
+  state_topic: collectd/OpenWrt/iwinfo-phy1-ap0/stations
+  unit_of_measurement: clients
+  value_template: "{{ value.split(':')[1].split('\x00')[0] | int }}"
+  unique_id: ap_clients2
+  device:
+    identifiers: Linksys
+    name: Router Casa
+    model: WRT1200AC
+    manufacturer: Linksys
+
+# 2.4 ghz IoT
+- name: OpenWRT VillaSole_IoT
+  state_topic: collectd/OpenWrt/iwinfo-phy1-ap1/stations
+  unit_of_measurement: clients
+  value_template: "{{ value.split(':')[1].split('\x00')[0] | int }}"
+  unique_id: ap_clients_iot
+  device:
+    identifiers: Linksys
+    name: Router Casa
+    model: WRT1200AC
+    manufacturer: Linksys
+
+# 5 ghz clients
+- name: OpenWRT VillaSole_PT_5
+  state_topic: collectd/OpenWrt/iwinfo-phy0-ap0/stations
+  unit_of_measurement: clients
+  value_template: "{{ value.split(':')[1].split('\x00')[0] | int }}"
+  unique_id: ap_clients5
+  device:
+    identifiers: Linksys
+    name: Router Casa
+    model: WRT1200AC
+    manufacturer: Linksys
+
+# temperature
+- name: OpenWRT temperature
+  state_topic: collectd/OpenWrt/thermal-thermal_zone0/temperature
+  unit_of_measurement: °C
+  value_template: "{{ value.split(':')[1].split('\x00')[0] | int }}"
+  unique_id: ap_temp
+  device:
+    identifiers: Linksys
+    name: Router Casa
+    model: WRT1200AC
+    manufacturer: Linksys
