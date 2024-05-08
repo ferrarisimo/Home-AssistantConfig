@@ -313,7 +313,7 @@
     topic: zigbee2mqtt/multiSwitch1/action
     payload: double_left
     id: double_left
-    alias: Luce Sala
+    alias: Fornelli
   - platform: mqtt
     topic: zigbee2mqtt/multiSwitch1/action
     payload: double_right
@@ -329,19 +329,30 @@
     payload: single_right
     id: single_right
     alias: Portone Destro
+  - alias: Aziona cancello
+    platform: mqtt
+    topic: zigbee2mqtt/multiSwitch1/action
+    payload: triple_left
+    id: triple_left
+  - alias: Apri e blocca cancello
+    platform: mqtt
+    topic: zigbee2mqtt/multiSwitch1/action
+    payload: triple_right
+    id: triple_right
   condition: []
   action:
-  - choose:
+  - alias: Action triple_left
+    choose:
     - conditions:
       - condition: trigger
         id:
-        - double_left
+        - triple_left
       sequence:
-      - type: toggle
-        device_id: 78446abf53c8b5c1e7b0d3fe9589501a
-        entity_id: 7a2d9ea2da8bc7bbb42257eeb339d9f2
-        domain: light
-    alias: Action double_left
+      - service: input_button.press
+        metadata: {}
+        data: {}
+        target:
+          entity_id: input_button.aziona_cancello
   - choose:
     - conditions:
       - condition: trigger
@@ -375,27 +386,30 @@
         entity_id: 993d28dc79ae5b69fa613c2a01d158e1
         domain: switch
     alias: Action single_right
+  - alias: Action double_left
+    choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - double_left
+      sequence:
+      - type: toggle
+        device_id: 0ec0ef9d0d3e7dea053bf22aead72f5d
+        entity_id: 499c583f6bffd0bd270f2195ba0b015f
+        domain: switch
+  - alias: Action triple_right
+    choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - triple_right
+      sequence:
+      - service: input_button.press
+        metadata: {}
+        data: {}
+        target:
+          entity_id: input_button.apri_e_blocca_cancello
   mode: single
-- id: '1694426735784'
-  alias: Controllo batterie
-  description: ''
-  use_blueprint:
-    path: Sbyx/low-battery-level-detection-notification-for-all-battery-sensors.yaml
-    input:
-      time: '22:00:00'
-      exclude:
-        entity_id: []
-        device_id:
-        - 8eeb84d37d9af8dcf8c2306fcaabe778
-        - ded2b85eadb9f534a6dad609f98f4449
-        - faa7cc39496879d5280aad762f01726e
-      actions:
-      - service: notify.mobile_app_iphonesimone
-        data:
-          title: Battery check
-          message: Controllo stato batterie
-          data:
-            '[object Object]':
 - id: '1696031829651'
   alias: 'Controllo frigorifero '
   description: ''
@@ -494,12 +508,18 @@
       - condition: trigger
         id:
         - Antifurto attivo da 5 minuti
+      - condition: device
+        device_id: 18903be5ec244baa96218345711b6889
+        domain: climate
+        entity_id: 41020373ee71dd3c59f0685c31f003b2
+        type: is_preset_mode
+        preset_mode: Winter
       sequence:
       - device_id: 18903be5ec244baa96218345711b6889
         domain: climate
         entity_id: 41020373ee71dd3c59f0685c31f003b2
-        type: set_hvac_mode
-        hvac_mode: 'off'
+        type: set_preset_mode
+        preset_mode: 'OFF'
       alias: Spengo caldaia se allarme attivo
     - conditions:
       - condition: trigger
@@ -509,8 +529,8 @@
       - device_id: 18903be5ec244baa96218345711b6889
         domain: climate
         entity_id: 41020373ee71dd3c59f0685c31f003b2
-        type: set_hvac_mode
-        hvac_mode: auto
+        type: set_preset_mode
+        preset_mode: Winter
       alias: Attivo caldaia se antifurto disattivato
   mode: single
 - id: '1704410536174'
@@ -552,8 +572,10 @@
   alias: Record produzione fotovoltaico
   description: ''
   trigger:
-  - platform: time_pattern
-    seconds: '30'
+  - platform: numeric_state
+    entity_id:
+    - sensor.produzione_attuale_fotovoltaico
+    above: input_number.record_produzione_fotovoltaico
   condition:
   - condition: numeric_state
     entity_id: sensor.produzione_attuale_fotovoltaico
@@ -567,7 +589,7 @@
     metadata: {}
     data:
       value: 'Il {{ as_timestamp(states(''sensor.date_time_iso'')) | timestamp_custom(''%-d
-        %b %Y, %I:%M %p'') }} è stato di: {{     states(''sensor.produzione_attuale_fotovoltaico'')
+        %b %Y, %I:%M %p'') }} è stato di: {{ states(''sensor.produzione_attuale_fotovoltaico'')
         }} W'
     target:
       entity_id: input_text.record_produzione_fotovoltaico_text
@@ -575,9 +597,9 @@
     metadata: {}
     data:
       title: Fotovoltaico
-      message: 'Nuovo record di produzione: {{         states(''sensor.produzione_attuale_fotovoltaico'')
+      message: 'Nuovo record di produzione: {{ states(''sensor.produzione_attuale_fotovoltaico'')
         }} W'
-    enabled: false
+    enabled: true
   mode: single
 - id: '1713791127575'
   alias: Comandi portoni Garage
@@ -642,4 +664,91 @@
     - service: script.blocca_il_cancello
       metadata: {}
       data: {}
+  mode: single
+- id: '1713806469033'
+  alias: Battery Low Notification
+  description: Battery Low Notification with auto dismiss
+  trigger:
+  - platform: event
+    event_type: battery_notes_battery_threshold
+    event_data:
+      battery_low: true
+    id: low
+    alias: Battery went low
+  - platform: event
+    event_type: battery_notes_battery_threshold
+    event_data:
+      battery_low: false
+    id: high
+    alias: Battery went high
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - low
+      sequence:
+      - service: persistent_notification.create
+        data:
+          title: '{{ trigger.event.data.device_name }} Battery Low'
+          notification_id: '{{ trigger.event.data.device_id }}'
+          message: The device has a battery level of {{ trigger.event.data.battery_level
+            }}% {{ '\n' -}} You need {{ trigger.event.data.battery_quantity }}x {{
+            trigger.event.data.battery_type }}
+    - conditions:
+      - condition: trigger
+        id:
+        - high
+      sequence:
+      - service: persistent_notification.dismiss
+        data:
+          notification_id: '{{ trigger.event.data.device_id }}'
+  mode: queued
+- id: '1713866774609'
+  alias: Calcolo efficienza Ford
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.ford_rifornimento
+    to: 'on'
+  condition: []
+  action:
+  - service: input_number.set_value
+    metadata: {}
+    data:
+      value: '{{ ((states(''sensor.fordpass_odometer'')|int - states(''input_number.km_ford_al_rifornimento'')|int)
+        / (states(''input_number.ford_costo_ultimo_rifornimento'')|float / states(''input_number.ford_ultimo_costo_diesel_lt'')|float))
+        | round(1) }}
+
+        '
+    target:
+      entity_id: input_number.ford_ultima_efficienza_km_lt
+  - service: input_number.set_value
+    metadata: {}
+    data:
+      value: '{{ states(''sensor.fordpass_odometer'') }}
+
+        '
+    target:
+      entity_id: input_number.km_ford_al_rifornimento
+  mode: single
+- id: '1714163795750'
+  alias: test automation
+  description: ''
+  trigger: []
+  condition: []
+  action:
+  - service: notify.mobile_app_iphonesimone
+    metadata: {}
+    data:
+      message: Test action
+      title: TEST
+      data:
+        actions:
+        - action: URI
+          title: Fotovoltaico
+          uri: /lovelace/fotovoltaico
+          icon: sfsymbols:sun.max.fill
   mode: single

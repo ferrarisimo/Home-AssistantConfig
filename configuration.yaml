@@ -63,6 +63,11 @@ logbook:
       - media_player.smart_tv_pro
       - media_player.android_tv_192_168_41_226
 
+battery_notes:
+  enable_autodiscovery: true
+  default_battery_low_threshold: 15
+  battery_increase_threshold: 25
+
 # OpenWrt
 device_tracker:
   - platform: luci
@@ -192,14 +197,6 @@ sensor:
     name: consumo_enel_kwh
     unit_prefix: k
     round: 2
-
-#calendar:
-#  - platform: caldav
-#    url: https://caldav.icloud.com
-#    username: !secret icloud_user
-#    password: !secret icloud_pwd
-#    calendars:
-#      - Family
 
 influxdb:
   host: 192.168.42.10
