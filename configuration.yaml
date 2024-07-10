@@ -65,7 +65,7 @@ logbook:
 
 battery_notes:
   enable_autodiscovery: true
-  default_battery_low_threshold: 15
+  default_battery_low_threshold: 25
   battery_increase_threshold: 25
 
 # OpenWrt
@@ -78,26 +78,18 @@ device_tracker:
       track_new_devices: true
 
 # MQTT
-mqtt:
-  #  binary_sensor:
-  #    - name: ArduinoAlarmStatus
-  #      state_topic: "arduino01/pin2"
-  #      payload_on: "0"
-  #      payload_off: "1"
-  #    - name: ArduinoAlarmActive
-  #      state_topic: "arduino01/pin3"
-  #      payload_on: "0"
-  #      payload_off: "1"
-  alarm_control_panel:
-    - name: Allarme
-      code: !secret antifurto_code
-      state_topic: stat/Alarm
-      command_topic: cmnd/Alarm
-      payload_arm_home: armed_home
-      payload_arm_away: armed_away
-      payload_disarm: disarmed
-      qos: 2
-  sensor: !include openwrt.yaml
+#mqtt:
+#  alarm_control_panel:
+#    - name: Allarme
+#      code: !secret antifurto_code
+#      state_topic: stat/Alarm
+#      command_topic: cmnd/Alarm
+#      payload_arm_home: armed_home
+#      payload_arm_away: armed_away
+#      payload_disarm: disarmed
+#      qos: 2
+
+mqtt: !include mqtt_sensors.yaml
 
 sensor:
   - platform: template
@@ -191,6 +183,15 @@ sensor:
         friendly_name: "Produzione Vendita Fotovoltaico"
         unit_of_measurement: "W"
         value_template: "{{ ((states('sensor.zcs_activepower_pcc_total')|int(0)) * -1) }}"
+      tesla_park_brake:
+        friendly_name: Parking Brake
+        icon_template: mdi:car-brake-parking
+        value_template: >-
+          {% if is_state('sensor.tesla_shift_state', 'P') %}
+            ON
+          {% else %}
+            OFF
+          {% endif %}
 
   - platform: integration
     source: sensor.enel_power
@@ -198,21 +199,21 @@ sensor:
     unit_prefix: k
     round: 2
 
-influxdb:
-  host: 192.168.42.10
-  port: 8086
-  database: home
-  username: !secret influxdb_user
-  password: !secret influxdb_password
-  max_retries: 3
-  measurement_attr: entity_id
-  include:
-    domains:
-      - sensor
+#influxdb:
+#  host: 192.168.42.10
+#  port: 8086
+#  database: home
+#  username: !secret influxdb_user
+#  password: !secret influxdb_password
+#  max_retries: 3
+#  measurement_attr: entity_id
+#  include:
+#    domains:
+#      - sensor
 
 shell_command:
-  start_pi_camera_video: ssh simone@192.168.41.162 -i /config/.ssh/id_ed25519 'sudo systemctl start remote_camera.service'
-  stop_pi_camera_video: ssh simone@192.168.41.162 -i /config/.ssh/id_ed25519 'sudo systemctl stop remote_camera.service'
+  #  start_pi_camera_video: ssh simone@192.168.41.162 -i /config/.ssh/id_ed25519 'sudo systemctl start remote_camera.service'
+  #  stop_pi_camera_video: ssh simone@192.168.41.162 -i /config/.ssh/id_ed25519 'sudo systemctl stop remote_camera.service'
   stop_nextdns: ssh root@192.168.41.2 -i /data/.ssh/id_ed25519 'nextdns stop'
   start_nextdns: ssh root@192.168.41.2 -i /data/.ssh/id_ed25519 'nextdns start'
   status_nextdns: ssh root@192.168.41.2 -i /data/.ssh/id_ed25519 'nextdns status'
